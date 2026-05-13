@@ -2,7 +2,7 @@ FROM gradle:8.7-jdk21-alpine AS builder
 WORKDIR /app
 COPY build.gradle settings.gradle ./
 COPY src ./src
-RUN gradle bootJar -x test --no-daemon
+RUN gradle bootJar -x test --no-daemon -Dorg.gradle.native=false
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
