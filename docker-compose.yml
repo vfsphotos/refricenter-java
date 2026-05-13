@@ -1,0 +1,48 @@
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: refricenter-db
+    environment:
+      POSTGRES_DB: refricenter
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: senha123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: refricenter-app
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: refricenter
+      DB_USER: postgres
+      DB_PASSWORD: senha123
+      JWT_SECRET: chave-secreta-local-minimo-32-caracteres-ok
+      PORT: 8000
+      # Aponta para os diretórios montados abaixo
+      STATIC_ROOT: /app/static
+      TEMPLATES_ROOT: /app/templates
+    volumes:
+      # Frontend (static e templates ficam em app_refricenter_fixed)
+      - ../app_refricenter_fixed/static:/app/static:ro
+      - ../app_refricenter_fixed/templates:/app/templates:ro
+      # Dados persistentes
+      - ./media:/app/media
+      - ./backups:/app/backups
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
