@@ -1,0 +1,58 @@
+services:
+  # Serviço Java/Spring Boot principal
+  - type: web
+    name: refricenter
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: refricenter-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: refricenter-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: refricenter-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: refricenter-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: refricenter-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WA_SERVICE_URL
+        value: https://refricenter-wa.onrender.com
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: PORT
+        value: "8000"
+
+  # Serviço WhatsApp (Node.js)
+  - type: web
+    name: refricenter-wa
+    env: docker
+    dockerfilePath: ./Dockerfile
+    rootDir: whatsapp-service
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: refricenter-db
+          property: connectionString
+
+databases:
+  - name: refricenter-db
+    plan: free
+    databaseName: refricenter
+    ipAllowList: []

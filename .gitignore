@@ -1,0 +1,20 @@
+# Build
+build/
+.gradle/
+*.jar
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.DS_Store
+
+# Runtime
+media/
+backups/
+*.log
+
+# Env
+.env
+application-local.yml
